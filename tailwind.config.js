@@ -4,12 +4,13 @@ export default {
     theme: {
         extend: {},
         container: {
-            screens: {
-                DEFAULT: "550px",
-                sm: "640px",
-                lg: "768px",
-                xl: "1078px",
-                "2xl": "1350px",
+            center: true,
+            padding: {
+                DEFAULT: "1rem",
+                sm: "2rem",
+                lg: "4rem",
+                xl: "5rem",
+                "2xl": "6rem",
             },
         },
     },
