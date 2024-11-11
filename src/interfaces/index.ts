@@ -10,3 +10,9 @@ export interface IProduct {
         imageURL: string;
     };
 }
+
+export interface IFormInput {
+    name: "title" | "description" | "price" | "imageURL";
+    label: string;
+    type: string;
+}
