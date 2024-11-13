@@ -6,6 +6,7 @@ import Modal from "./Components/UI/Modal";
 import { formInputList, productList } from "./Data";
 import { IProduct } from "./interfaces";
 import { productValidation } from "./Validation";
+import ErrorsMessage from "./Components/ErrorsMessage";
 
 function App() {
     const productDefaultValue: IProduct = {
@@ -24,6 +25,7 @@ function App() {
     //--------- States ---------
     const [isOpen, setIsOpen] = useState(false);
     const [product, setProduct] = useState<IProduct>(productDefaultValue);
+    const [errors, setErrors] = useState({ title: "", description: "", price: "", imageURL: "" });
 
     //--------- Handlers ---------
     const openModal = () => {
@@ -37,18 +39,27 @@ function App() {
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setProduct({ ...product, [name]: value });
-    };
-
-    const onSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const errors = productValidation({ description: product.description, imageURL: product.imageURL, price: product.price, title: product.title });
-        console.log(errors);
-        console.log(product);
+        setErrors({ ...errors, [name]: "" });
     };
 
     const onCancel = () => {
         setProduct(productDefaultValue);
         closeModal();
+    };
+
+    const onSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const { description, imageURL, price, title } = product;
+        const errors = productValidation({ description, imageURL, price, title });
+
+        const hasError = Object.values(errors).some((value) => value !== "");
+
+        if (hasError) {
+            setErrors(errors);
+            return;
+        }
+
+        console.log("Go to server");
     };
 
     //--------- Renders ---------
@@ -59,6 +70,7 @@ function App() {
                 {input.name}
             </label>
             <Input id={input.name} type={input.type} name={input.name} value={product[input.name]} onChange={onChangeHandler} />
+            <ErrorsMessage message={errors[input.name]} />
         </div>
     ));
 
