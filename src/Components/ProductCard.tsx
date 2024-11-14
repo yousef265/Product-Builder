@@ -1,5 +1,6 @@
 import { IProduct } from "../interfaces";
 import { textSlicer } from "../utils/functions";
+import ColorCircle from "./ColorCircle";
 import Image from "./Image";
 import Button from "./UI/Button";
 
@@ -10,23 +11,20 @@ interface IProps {
 function productCard({ product }: IProps) {
     const { title, price, imageURL, description, colors, category } = product;
 
-    // Renders
+    // -------RENDERS-------
 
-    const colorsList = colors.length ? (
-        colors.map((color) => <span key={color} className={`size-5 rounded-full cursor-pointer`} style={{ backgroundColor: color }} />)
-    ) : (
-        <p className="text-gray-700 font-medium">Not Available Colors !</p>
-    );
+    const renderColorList = colors.length ? colors.map((color) => <ColorCircle key={color} color={color} />) : <p className="text-gray-700 font-medium h-[20px]">Not Available Colors !</p>;
 
     return (
         <>
             <div className="border border-gray-300 p-3 rounded-lg space-y-2 ">
                 <Image alt={title} className="rounded-lg w-full h-56 object-cover" imageUrl={imageURL} />
 
-                <h3 className="font-bold text-lg text-indigo-600">{title}</h3>
-                <p className="text-gray-600 ">{textSlicer(description, 70)}</p>
+                <h3 className="font-bold text-lg text-indigo-600 ">{textSlicer(title, 30)}</h3>
 
-                <div className="flex space-x-1">{colorsList}</div>
+                <p className="text-gray-600  truncate">{textSlicer(description, 60)}</p>
+
+                <div className="flex space-x-1 h-[20px]">{renderColorList}</div>
 
                 <div className="flex items-center justify-between">
                     <span className="text-lg font-medium text-indigo-600">${price}</span>
