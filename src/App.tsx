@@ -29,7 +29,7 @@ function App() {
     const [isOpen, setIsOpen] = useState(false);
     const [allProduct, setAllProduct] = useState<IProduct[]>(productList);
     const [product, setProduct] = useState<IProduct>(productDefaultValue);
-    const [errors, setErrors] = useState({ title: "", description: "", price: "", imageURL: "" });
+    const [errors, setErrors] = useState({ title: "", description: "", price: "", imageURL: "", colors: "" });
     const [tempColors, setTempColors] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
@@ -44,6 +44,7 @@ function App() {
 
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
+        console.log(name, value);
         setProduct({ ...product, [name]: value });
         setErrors({ ...errors, [name]: "" });
     };
@@ -55,8 +56,8 @@ function App() {
 
     const onSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const { description, imageURL, price, title } = product;
-        const errors = productValidation({ description, imageURL, price, title });
+        const { description, imageURL, price, title, colors } = product;
+        const errors = productValidation({ description, imageURL, price, title, colors });
 
         const hasError = Object.values(errors).some((value) => value !== "");
 
@@ -90,6 +91,7 @@ function App() {
             key={color}
             color={color}
             onClick={() => {
+                setErrors((prev) => ({ ...prev, colors: "" }));
                 if (tempColors.includes(color)) {
                     setTempColors((prev) => prev.filter((item) => item !== color));
                     return;
@@ -117,11 +119,20 @@ function App() {
                     <div className="space-y-2">{renderFromInputList}</div>
 
                     <SelectMenu selected={selectedCategory} setSelected={setSelectedCategory} />
-
-                    <div className="flex space-x-1">{renderColorList}</div>
+                    <div>
+                        <div className="flex space-x-1">{renderColorList}</div>
+                        <ErrorsMessage message={errors["colors"]} />
+                    </div>
                     <div className="flex flex-wrap">
                         {tempColors.map((color) => (
-                            <span key={color} className="rounded-lg text-white px-[2px] m-px" style={{ backgroundColor: color }}>
+                            <span
+                                key={color}
+                                className="rounded-lg text-white px-[2px] m-px cursor-pointer"
+                                style={{ backgroundColor: color }}
+                                onClick={() => {
+                                    return setTempColors((prev) => prev.filter((item) => item !== color));
+                                }}
+                            >
                                 {color}
                             </span>
                         ))}
