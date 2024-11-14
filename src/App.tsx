@@ -1,14 +1,15 @@
 import { ChangeEvent, FormEvent, useState } from "react";
+import { v4 as uuid } from "uuid";
+import ColorCircle from "./Components/ColorCircle";
+import ErrorsMessage from "./Components/ErrorsMessage";
 import ProductCard from "./Components/ProductCard";
 import Button from "./Components/UI/Button";
 import Input from "./Components/UI/Input";
 import Modal from "./Components/UI/Modal";
-import { colors, formInputList, productList } from "./Data";
+import SelectMenu from "./Components/UI/SelectMenu";
+import { categories, colors, formInputList, productList } from "./Data";
 import { IProduct } from "./interfaces";
 import { productValidation } from "./Validation";
-import ErrorsMessage from "./Components/ErrorsMessage";
-import ColorCircle from "./Components/ColorCircle";
-import { v4 as uuid } from "uuid";
 
 function App() {
     const productDefaultValue: IProduct = {
@@ -30,6 +31,7 @@ function App() {
     const [product, setProduct] = useState<IProduct>(productDefaultValue);
     const [errors, setErrors] = useState({ title: "", description: "", price: "", imageURL: "" });
     const [tempColors, setTempColors] = useState<string[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
     //--------- Handlers ---------
     const openModal = () => {
@@ -63,7 +65,7 @@ function App() {
             return;
         }
 
-        setAllProduct((prev) => [{ ...product, id: uuid(), colors: tempColors }, ...prev]);
+        setAllProduct((prev) => [{ ...product, id: uuid(), colors: tempColors, category: selectedCategory }, ...prev]);
         setProduct(productDefaultValue);
         setTempColors([]);
         closeModal();
@@ -113,6 +115,8 @@ function App() {
             <Modal isOpen={isOpen} title="Add New Product" closeModal={closeModal}>
                 <form className="space-y-3" onSubmit={onSubmitHandler}>
                     <div className="space-y-2">{renderFromInputList}</div>
+
+                    <SelectMenu selected={selectedCategory} setSelected={setSelectedCategory} />
 
                     <div className="flex space-x-1">{renderColorList}</div>
                     <div className="flex flex-wrap">
