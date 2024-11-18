@@ -1,5 +1,5 @@
 import { IProduct } from "../interfaces";
-import { textSlicer } from "../utils/functions";
+import { numberWithCommas, textSlicer } from "../utils/functions";
 import ColorCircle from "./ColorCircle";
 import Image from "./Image";
 import Button from "./UI/Button";
@@ -38,7 +38,7 @@ function productCard({ product, setCurrentProduct, openEditModal, setTempColors 
                 <div className="flex space-x-1 h-[20px]">{renderColorList}</div>
 
                 <div className="flex items-center justify-between">
-                    <span className="text-lg font-medium text-indigo-600">${price}</span>
+                    <span className="text-lg font-medium text-indigo-600">${numberWithCommas(price)}</span>
                     <span className="flex items-center space-x-2">
                         <span>{category.name}</span>
 

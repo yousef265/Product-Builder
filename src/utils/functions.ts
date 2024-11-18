@@ -12,3 +12,13 @@ export function textSlicer(text: string, maxLength: number = 60): string {
 
     return text;
 }
+
+/**
+ * Formats a number by adding commas as thousands separators.
+ *
+ * @param {number | string} price - The number or string to format with commas.
+ * @returns {string} The formatted string with commas as thousands separators.
+ */
+export function numberWithCommas(price: number | string): string {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
