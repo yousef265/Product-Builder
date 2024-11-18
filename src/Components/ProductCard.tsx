@@ -6,10 +6,21 @@ import Button from "./UI/Button";
 
 interface IProps {
     product: IProduct;
+    setCurrentProduct: (product: IProduct) => void;
+    openEditModal: () => void;
+    setTempColors: (values: string[]) => void;
 }
 
-function productCard({ product }: IProps) {
+function productCard({ product, setCurrentProduct, openEditModal, setTempColors }: IProps) {
     const { title, price, imageURL, description, colors, category } = product;
+
+    // -------Handlers-------
+
+    const onEdit = () => {
+        setCurrentProduct(product);
+        setTempColors(product.colors);
+        openEditModal();
+    };
 
     // -------RENDERS-------
 
@@ -36,7 +47,7 @@ function productCard({ product }: IProps) {
                 </div>
 
                 <div className="flex space-x-2">
-                    <Button type="button" className="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 w-full">
+                    <Button type="button" className="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 w-full" onClick={onEdit}>
                         Edit
                     </Button>
                     <Button type="button" className="bg-red-600 hover:bg-red-500 active:bg-red-700 w-full ">

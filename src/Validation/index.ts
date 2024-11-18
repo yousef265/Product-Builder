@@ -24,7 +24,7 @@
  * - Colors: Must contain at least one color.
  */
 
-export const productValidation = (product: { title: string; description: string; price: string; imageURL: string; colors: string[] }) => {
+export const productValidation = (product: { title: string; description: string; price: string; imageURL: string; colors: string[] }): object => {
     const errors = {
         title: "",
         price: "",

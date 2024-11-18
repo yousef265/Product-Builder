@@ -26,62 +26,121 @@ function App() {
     };
 
     //--------- States ---------
-    const [isOpen, setIsOpen] = useState(false);
     const [allProduct, setAllProduct] = useState<IProduct[]>(productList);
     const [product, setProduct] = useState<IProduct>(productDefaultValue);
+    const [currentProduct, setCurrentProduct] = useState<IProduct>(productDefaultValue);
     const [errors, setErrors] = useState({ title: "", description: "", price: "", imageURL: "", colors: "" });
-    const [tempColors, setTempColors] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+    const [tempColors, setTempColors] = useState<string[]>([]);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     //--------- Handlers ---------
-    const openModal = () => {
-        setIsOpen(true);
-    };
+    const openAddModal = () => setIsAddModalOpen(true);
+    const closeAddModal = () => setIsAddModalOpen(false);
 
-    const closeModal = () => {
-        setIsOpen(false);
-    };
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
 
-    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const onChangeAddHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        console.log(name, value);
         setProduct({ ...product, [name]: value });
         setErrors({ ...errors, [name]: "" });
     };
 
-    const onCancel = () => {
-        setProduct(productDefaultValue);
-        closeModal();
+    const onChangeEditHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setCurrentProduct({ ...currentProduct, [name]: value });
+        setErrors({ ...errors, [name]: "" });
     };
 
-    const onSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
+    const onِِAddModalCancel = () => {
+        setProduct(productDefaultValue);
+        closeAddModal();
+    };
+
+    const onِِEditModalCancel = () => {
+        setProduct(productDefaultValue);
+        closeEditModal();
+    };
+
+    const onSubmitAddHandler = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const { description, imageURL, price, title, colors } = product;
-        const errors = productValidation({ description, imageURL, price, title, colors });
+
+        const { description, imageURL, price, title } = product;
+        const errors = productValidation({ description, imageURL, price, title, colors: tempColors });
 
         const hasError = Object.values(errors).some((value) => value !== "");
 
         if (hasError) {
-            setErrors(errors);
+            setErrors((prev) => ({
+                ...prev,
+                ...errors,
+            }));
             return;
         }
 
         setAllProduct((prev) => [{ ...product, id: uuid(), colors: tempColors, category: selectedCategory }, ...prev]);
         setProduct(productDefaultValue);
         setTempColors([]);
-        closeModal();
+        closeAddModal();
+
+        console.log("Go to server");
+    };
+
+    const onSubmitEditHandler = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log("edit");
+
+        const { description, imageURL, price, title } = currentProduct;
+
+        const errors = productValidation({ description, imageURL, price, title, colors: tempColors });
+
+        const hasError = Object.values(errors).some((value) => value !== "");
+
+        if (hasError) {
+            console.log(errors);
+
+            setErrors((prev) => ({
+                ...prev,
+                ...errors,
+            }));
+            return;
+        }
+
+        console.log(selectedCategory);
+
+        const editedProduct = [...allProduct];
+        const updatedProduct = editedProduct.map((product) => (product.id === currentProduct.id ? { ...currentProduct, colors: tempColors } : product));
+        setAllProduct(updatedProduct);
+
+        setProduct(productDefaultValue);
+        setTempColors([]);
+        closeEditModal();
 
         console.log("Go to server");
     };
 
     //--------- Renders ---------
-    const renderProductList = allProduct.map((product) => <ProductCard key={product.id} product={product} />);
-    const renderFromInputList = formInputList.map((input) => (
+    const renderProductList = allProduct.map((product) => (
+        <ProductCard key={product.id} product={product} setCurrentProduct={setCurrentProduct} openEditModal={openEditModal} setTempColors={setTempColors} />
+    ));
+    const renderAddFromInputList = formInputList.map((input) => (
         <div className="space-y-2 flex flex-col" key={input.name}>
             <label className="text-md font-semibold capitalize" htmlFor={input.name}>
                 {input.name}
             </label>
-            <Input id={input.name} type={input.type} name={input.name} value={product[input.name]} onChange={onChangeHandler} />
+            <Input id={input.name} type={input.type} name={input.name} value={product[input.name]} onChange={onChangeAddHandler} />
+            <ErrorsMessage message={errors[input.name]} />
+        </div>
+    ));
+
+    const renderEditFormInputList = formInputList.map((input) => (
+        <div className="space-y-2 flex flex-col" key={input.name}>
+            <label className="text-md font-semibold capitalize" htmlFor={input.name}>
+                {input.name}
+            </label>
+            <Input id={input.name} type={input.type} name={input.name} value={currentProduct[input.name]} onChange={onChangeEditHandler} />
             <ErrorsMessage message={errors[input.name]} />
         </div>
     ));
@@ -108,15 +167,17 @@ function App() {
                 <h2 className="text-lg  md:text-4xl uppercase">
                     Product <span className="text-indigo-600">Builder</span>
                 </h2>
-                <Button type="button" className="text-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 " onClick={openModal}>
+                <Button type="button" className="text-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 " onClick={openAddModal}>
                     Build Product
                 </Button>
             </div>
 
             <div className="my-5 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">{renderProductList}</div>
-            <Modal isOpen={isOpen} title="Add New Product" closeModal={closeModal}>
-                <form className="space-y-3" onSubmit={onSubmitHandler}>
-                    <div className="space-y-2">{renderFromInputList}</div>
+
+            {/* ADD PRODUCT MODAL */}
+            <Modal isOpen={isAddModalOpen} title="Add New Product" closeModal={closeAddModal}>
+                <form className="space-y-3" onSubmit={onSubmitAddHandler}>
+                    <div className="space-y-2">{renderAddFromInputList}</div>
 
                     <SelectMenu selected={selectedCategory} setSelected={setSelectedCategory} />
                     <div>
@@ -130,7 +191,7 @@ function App() {
                                 className="rounded-lg text-white px-[2px] m-px cursor-pointer"
                                 style={{ backgroundColor: color }}
                                 onClick={() => {
-                                    return setTempColors((prev) => prev.filter((item) => item !== color));
+                                    setTempColors((prev) => prev.filter((item) => item !== color));
                                 }}
                             >
                                 {color}
@@ -139,10 +200,56 @@ function App() {
                     </div>
 
                     <div className="flex space-x-2">
-                        <Button type="button" className="text-lg w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700">
+                        <Button type="submit" className="text-lg w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700">
                             Add
                         </Button>
-                        <Button type="button" className="text-lg text-white w-full bg-slate-400 hover:bg-slate-300 active:bg-slate-500" onClick={onCancel}>
+                        <Button type="button" className="text-lg text-white w-full bg-slate-400 hover:bg-slate-300 active:bg-slate-500" onClick={onِِAddModalCancel}>
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* EDIT PRODUCT MODAL */}
+            <Modal isOpen={isEditModalOpen} title="Edit Product" closeModal={closeEditModal}>
+                <form className="space-y-3" onSubmit={onSubmitEditHandler}>
+                    <div className="space-y-2">{renderEditFormInputList}</div>
+
+                    <SelectMenu
+                        selected={currentProduct.category}
+                        setSelected={(value) => {
+                            setCurrentProduct((prev) => ({
+                                ...prev,
+                                category: value,
+                            }));
+                        }}
+                    />
+
+                    <div>
+                        <div className="flex space-x-1">{renderColorList}</div>
+                        <ErrorsMessage message={errors["colors"]} />
+                    </div>
+
+                    <div className="flex flex-wrap">
+                        {tempColors.map((color) => (
+                            <span
+                                key={color}
+                                className="rounded-lg text-white px-[2px] m-px cursor-pointer"
+                                style={{ backgroundColor: color }}
+                                onClick={() => {
+                                    setTempColors((prev) => prev.filter((item) => item !== color));
+                                }}
+                            >
+                                {color}
+                            </span>
+                        ))}
+                    </div>
+
+                    <div className="flex space-x-2">
+                        <Button type="submit" className="text-lg w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700">
+                            Submit
+                        </Button>
+                        <Button type="button" className="text-lg text-white w-full bg-slate-400 hover:bg-slate-300 active:bg-slate-500" onClick={onِِEditModalCancel}>
                             Cancel
                         </Button>
                     </div>

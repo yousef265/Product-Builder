@@ -5,7 +5,7 @@ interface IProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     className: string;
 }
 
-function Button({ className, type, children, ...rest }: IProps) {
+function Button({ className, children, ...rest }: IProps) {
     return (
         <button className={`${className} px-4 py-2 rounded-lg text-sm md:text-base text-slate-200 font-medium uppercase tracking-wider transition`} {...rest}>
             {children}

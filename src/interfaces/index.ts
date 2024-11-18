@@ -18,7 +18,7 @@ export interface IFormInput {
 }
 
 export interface ICategory {
-    id: string;
+    id?: string; // to make {id} optional this is wrong solution
     name: string;
     imageURL: string;
 }
