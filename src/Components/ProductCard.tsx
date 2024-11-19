@@ -9,9 +9,10 @@ interface IProps {
     setCurrentProduct: (product: IProduct) => void;
     openEditModal: () => void;
     setTempColors: (values: string[]) => void;
+    openConfirmModal: () => void;
 }
 
-function productCard({ product, setCurrentProduct, openEditModal, setTempColors }: IProps) {
+function productCard({ product, setCurrentProduct, openEditModal, setTempColors, openConfirmModal }: IProps) {
     const { title, price, imageURL, description, colors, category } = product;
 
     // -------Handlers-------
@@ -20,6 +21,11 @@ function productCard({ product, setCurrentProduct, openEditModal, setTempColors 
         setCurrentProduct(product);
         setTempColors(product.colors);
         openEditModal();
+    };
+
+    const onRemove = () => {
+        openConfirmModal();
+        setCurrentProduct(product);
     };
 
     // -------RENDERS-------
@@ -50,7 +56,7 @@ function productCard({ product, setCurrentProduct, openEditModal, setTempColors 
                     <Button type="button" className="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 w-full" onClick={onEdit}>
                         Edit
                     </Button>
-                    <Button type="button" className="bg-red-600 hover:bg-red-500 active:bg-red-700 w-full ">
+                    <Button type="button" className="bg-red-600 hover:bg-red-500 active:bg-red-700 w-full " onClick={onRemove}>
                         Delete
                     </Button>
                 </div>

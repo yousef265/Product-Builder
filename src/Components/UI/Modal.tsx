@@ -6,9 +6,10 @@ interface IProps {
     title?: string;
     children: ReactNode;
     closeModal: () => void;
+    description?: string;
 }
 
-function Modal({ isOpen, title, children, closeModal }: IProps) {
+function Modal({ isOpen, title, children, closeModal, description }: IProps) {
     return (
         <>
             <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none" onClose={closeModal}>
@@ -21,6 +22,8 @@ function Modal({ isOpen, title, children, closeModal }: IProps) {
                                     {title}
                                 </DialogTitle>
                             )}
+                            {description && <p className="text-sm text-gray-500 mt-3">{description}</p>}
+
                             {children}
                         </DialogPanel>
                     </div>
