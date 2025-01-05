@@ -2,6 +2,7 @@ import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@h
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { categories } from "../../Data";
 import { ICategory } from "../../interfaces";
+import { memo } from "react";
 
 interface IProps {
     setSelected: (category: ICategory) => void;
@@ -51,4 +52,4 @@ const SelectMenu = ({ selected, setSelected }: IProps) => {
     );
 };
 
-export default SelectMenu;
+export default memo(SelectMenu);

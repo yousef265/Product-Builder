@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { IProduct } from "../interfaces";
 import { numberWithCommas, textSlicer } from "../utils/functions";
 import ColorCircle from "./ColorCircle";
@@ -65,4 +66,4 @@ function productCard({ product, setCurrentProduct, openEditModal, setTempColors,
     );
 }
 
-export default productCard;
+export default memo(productCard);
